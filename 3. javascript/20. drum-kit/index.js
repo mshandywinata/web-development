@@ -40,12 +40,29 @@ for (let i = 0; i < drumButtons.length; i++) {
     // keydown event should be attached to entire document object
     drumButtons[i].addEventListener('click', function () {
         // by using anon function we could get the 'this' value instead of using arrow function
-        let buttonKey = this.innerHTML;
+        const buttonKey = this.innerHTML;
         makeSound(buttonKey);
+        pressedAnimation(buttonKey);
     })
 }
 
 // detect the keyboard key by attached the event listener to the entire document
 document.addEventListener('keydown', function (event) {
     makeSound(event.key);
+    pressedAnimation(event.key);
 })
+
+// add pressed class into the pressedKey
+function pressedAnimation(pressedKey) {
+    const key = document.querySelector(`.${pressedKey}`);
+    // const existingClass = key.getAttribute('class');
+    // key.setAttribute('class', `${existingClass} pressed`);
+    // instead of get the exisitng class and reapply the former with new one
+    // we could instead get the list of class and append it
+    key.classList.add("pressed");
+
+    // set delay animation before we remove the class
+    setTimeout(() => {
+        key.classList.remove("pressed");
+    }, 100);
+}
