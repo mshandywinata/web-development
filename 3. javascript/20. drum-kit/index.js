@@ -1,4 +1,4 @@
-function makeSound(char) {
+ function makeSound(char) {
     switch (char) {
         case 'w':
             const tom1 = new Audio('./sounds/tom-1.mp3');
