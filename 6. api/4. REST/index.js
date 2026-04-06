@@ -43,14 +43,8 @@ app.post("/get-secret", async (req, res) => {
 });
 
 app.post("/post-secret", async (req, res) => {
-    const secret = req.body.secret;
-    const score = req.body.score
-    
     try {
-        const response = await axios.post(`${BASE_URL}/secrets`, {
-            secret,
-            score,
-        }, CONFIG);
+        const response = await axios.post(`${BASE_URL}/secrets`, req.body, CONFIG);
         const result = JSON.stringify(response.data);
 
         res.render("index.ejs", {
@@ -67,14 +61,9 @@ app.post("/post-secret", async (req, res) => {
 
 app.post("/put-secret", async (req, res) => {
     const id = req.body.id;
-    const secret = req.body.secret;
-    const score = req.body.score;
 
     try {
-        const response = await axios.put(`${BASE_URL}/secrets/${id}`, {
-            secret,
-            score,
-        }, CONFIG);
+        const response = await axios.put(`${BASE_URL}/secrets/${id}`, req.body, CONFIG);
         const result = JSON.stringify(response.data);
 
         res.render("index.ejs", {
@@ -91,14 +80,9 @@ app.post("/put-secret", async (req, res) => {
 
 app.post("/patch-secret", async (req, res) => {
     const id = req.body.id;
-    const secret = req.body.secret;
-    const score = req.body.score;
 
     try {
-        const response = await axios.patch(`${BASE_URL}/secrets/${id}`, {
-            secret,
-            score,
-        }, CONFIG);
+        const response = await axios.patch(`${BASE_URL}/secrets/${id}`, req.body, CONFIG);
         const result = JSON.stringify(response.data);
 
         res.render("index.ejs", {
