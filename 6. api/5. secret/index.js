@@ -21,11 +21,7 @@ app.get("/", async (req, res) => {
         });
     } catch (error) {
         console.log(`[ERROR] ${error.message}`);
-
-        res.render("index.ejs", {
-            secret: error.message,
-            user: null,
-        });
+        res.status(500);
     }
 });
 
