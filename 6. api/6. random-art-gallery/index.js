@@ -4,69 +4,74 @@ import axios from "axios";
 
 const app = express();
 const PORT = 3000;
-const BASE_URL = "https://api.europeana.eu/record/v2";
-const API_KEY = "bellambl";
+const BASE_URL = "https://collectionapi.metmuseum.org/public/collection/v1/objects";
 
-let count = 0;
-
-const initCount = async () => {
-    try {
-        const response = await axios.get(`${BASE_URL}/search.json`,{
-            params: {
-                wskey: API_KEY,
-                query: 'Indonesia AND (what:painting OR what:sculpture OR what:artwork)',
-                media: true,
-                rows: 0,
-                qf: 'TYPE:IMAGE',
-            },
-        });
-        const result = response.data;
-        count = result.totalResults;
-
-        console.log(`[SUCCESS] count = ${count}`);
-    } catch (error) {
-        console.log(`[ERROR] ${error.message}`);
-    }
-};
+const TOTAL = 500968;
 
 app.use(morgan("common"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("node_modules/bootstrap/dist/"));
 
 app.get("/", (req, res) => {
     res.redirect("/images/random");
 });
 
 app.get("/images/random", async (req, res) => {
-    const randomStart = Math.floor(Math.random() * count) + 1;
-    console.log(`[RAND] ${randomStart}`);
-    
-    try {
-        const response = await axios.get(`${BASE_URL}/search.json`,{
-            params: {
-                wskey: API_KEY,
-                query: 'Indonesia AND (what:painting OR what:sculpture OR what:artwork)',
-                media: true,
-                rows: 1,
-                start: randomStart,
-                profile: 'rich',
-                qf: 'TYPE:IMAGE',
-            },
-        });
-        const result = response.data.items[0];
+    let retryCount = 0;
+    const MAX_RETRIES = 10;
 
-        res.json({
-            title: result.title[0],
-            creator: result.dcCreator[0] ? result.dcCreator[0] : 'Unknown Artist',
-            provider: result.dataProvider[0] ? result.dataProvider[0] : "",
-            imageUrl: result.edmPreview[0] ? result.edmPreview[0] : null,
-            europeanaLink: result.guid,
-        });
-    } catch (error) {
-        console.log(`[ERROR] ${error.message}`);
+    const fetchArtwork = async () => {
+        if (retryCount >= MAX_RETRIES) {
+            return res.render("index.ejs", {
+                title: "Artwork Not Available",
+                description: "Retries limit exceeded. Try to hit the Refresh Page button",
+                imageUrl: "https://placehold.co/600x400?text=NoArtwork",
+                fullImageUrl: "https://placehold.co/600x400?text=NoArtwork",
+            });
+        }
+
+        const randomId = Math.floor(Math.random() * TOTAL) + 1;
+        console.log(`[RAND] id = ${randomId}`);
+        
+        try {
+            const response = await axios.get(`${BASE_URL}/${randomId}`);
+            const result = response.data;
+            const imageUrl = result.primaryImageSmall ? result.primaryImageSmall : result.primaryImage;
+            const fullImageUrl = result.primaryImage;
+
+            if (!imageUrl) {
+                retryCount++;
+                return fetchArtwork();
+            }
+
+            const artist = result.artistDisplayName ? result.artistDisplayName : "Unknown Artist/Creator";
+            const year = result.objectDate ? result.objectDate : "Unknown Date";
+            const provider = result.repository ? result.repository : "Unknown Repository";
+
+            console.log(`[RESULT] ${result.title} ${imageUrl}`);
+
+            res.render("index.ejs", {
+                title: result.title,
+                imageUrl,
+                fullImageUrl,
+                description: `${artist}, ${year}, ${provider}`,
+            });
+
+        } catch (error) {
+            if (error.response) {
+                console.log(`[${error.response.status}] ${error.response.statusText}`);
+            } else {
+                console.log(`[ERROR] ${error.message}`);
+            }
+
+            retryCount++;
+            return fetchArtwork();
+        };
     }
+
+    fetchArtwork();
 });
 
 app.listen(PORT, async () => {
     console.log(`Server running on: http://localhost:${PORT}`);
-    await initCount();
 });
