@@ -78,28 +78,32 @@ const addVisited = async (userId, countryName) => {
 };
 
 let currentUserId;
+let currentUser;
+let countryCodes;
+let users;
 
 app.get("/", async (req, res) => {
   try {
-    const users = await getUsers();
+    users = await getUsers();
 
     if (!currentUserId && users.length > 0) {
       currentUserId = users[0].id;
     }
 
-    const currentUser = users.find((user) => user.id == currentUserId);
     const countries = await getVisited(currentUserId);
-    const country_codes = countries.map((country) => country.country_code);
+
+    currentUser = users.find((user) => user.id == currentUserId);
+    countryCodes = countries.map((country) => country.country_code);
 
     console.log(currentUserId);
     console.log(currentUser);
-    console.log(country_codes);
+    console.log(countryCodes);
 
     res.render("index.ejs", {
       users,
       color: currentUser.color,
       total: countries.length,
-      countries: country_codes,
+      countries: countryCodes,
     });
   } catch (error) {
     console.error(error.message);
@@ -137,11 +141,19 @@ app.post("/add", async (req, res) => {
     const inserted = await addVisited(currentUserId, countryInput);
     console.log(inserted);
     currentUserId = inserted[0].user_id;
+
+    res.redirect("/");
   } catch (error) {
     console.error(error.message);
-  }
 
-  res.redirect("/");
+    res.render("index.ejs", {
+      users,
+      color: currentUser.color,
+      total: countryCodes.length,
+      countries: countryCodes,
+      error: `Country '${country} does not exist. Please try again.'`,
+    });
+  }
 });
 
 app.listen(PORT, (req, res) => {
