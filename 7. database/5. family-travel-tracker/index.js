@@ -95,9 +95,7 @@ app.get("/", async (req, res) => {
     currentUser = users.find((user) => user.id == currentUserId);
     countryCodes = countries.map((country) => country.country_code);
 
-    console.log(currentUserId);
-    console.log(currentUser);
-    console.log(countryCodes);
+    console.log(currentUserId, currentUser, countryCodes);
 
     res.render("index.ejs", {
       users,
