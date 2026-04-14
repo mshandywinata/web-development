@@ -1,9 +1,9 @@
 import prisma from "../lib/prisma.js";
 
-const note = prisma.note;
+const model = prisma.note;
 
 export const getAllNoteEntries = async () => {
-  return await note.findMany({
+  return await model.findMany({
     orderBy: {
       [sortBy]: order,
     },
@@ -14,20 +14,20 @@ export const getAllNoteEntries = async () => {
 };
 
 export const createNoteEntry = async (note) => {
-  return await note.create({
+  return await model.create({
     data: note,
   });
 };
 
 export const updateNoteEntryById = async (id, note) => {
-  return await note.update({
+  return await model.update({
     where: { id },
     data: note,
   });
 };
 
 export const deleteNoteEntryById = async (id) => {
-  return await note.delete({
+  return await model.delete({
     where: { id },
   });
 };

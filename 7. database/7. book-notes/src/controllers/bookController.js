@@ -1,12 +1,12 @@
 import prisma from "../lib/prisma.js";
 
-const book = prisma.book;
+const model = prisma.book;
 
 export const getAllBookEntries = async (
   sortBy = "created_at",
   order = "desc",
 ) => {
-  return await book.findMany({
+  return await model.findMany({
     orderBy: {
       [sortBy]: order,
     },
@@ -17,26 +17,26 @@ export const getAllBookEntries = async (
 };
 
 export const getBookEntryById = async (id) => {
-  return await book.findUnique({
+  return await model.findUnique({
     where: { id: parseInt(id) },
   });
 };
 
 export const createBookEntry = async (book) => {
-  return await book.create({
+  return await model.create({
     data: book,
   });
 };
 
 export const updateBookEntryById = async (id, book) => {
-  return await book.update({
+  return await model.update({
     where: { id },
     data: book,
   });
 };
 
 export const deleteBookEntryById = async (id) => {
-  return await book.delete({
+  return await model.delete({
     where: { id },
   });
 };
