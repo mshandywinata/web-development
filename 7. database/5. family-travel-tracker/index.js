@@ -149,7 +149,7 @@ app.post("/add", async (req, res) => {
       color: currentUser.color,
       total: countryCodes.length,
       countries: countryCodes,
-      error: `Country '${country} does not exist. Please try again.'`,
+      error: error.message,
     });
   }
 });
