@@ -13,8 +13,9 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await findUser(email);
+    const loggedIn = await isMatch(password, user.password);
 
-    if (!isMatch(password, user.password)) {
+    if (!loggedIn) {
       return res.status(400).json({
         message: "Invalid credentials.",
       });
@@ -37,8 +38,9 @@ export const getRegister = (req, res) => {
 export const registerUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const hashedPassword = await getHashed(password);
 
-    await createUser(email, getHashed(password));
+    await createUser(email, hashedPassword);
 
     res.redirect("/login");
   } catch (error) {
