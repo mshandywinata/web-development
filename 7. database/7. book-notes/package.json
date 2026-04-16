@@ -10,6 +10,9 @@
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio"
   },
+  "prisma": {
+    "seed": "node ./prisma/seed.js"
+  },
   "keywords": [],
   "author": "Muhamad Shandy Winata",
   "license": "ISC",
@@ -21,6 +24,7 @@
     "dotenv": "^17.4.2",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
+    "method-override": "^3.0.0",
     "morgan": "^1.10.1",
     "pg": "^8.20.0"
   },
