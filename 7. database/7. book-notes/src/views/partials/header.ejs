@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Short+Stack&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/doodle.css">
+
+    <style>
+        /* Responsive Layout Grid */
+        .grid-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            padding: 30px 0;
+            border-bottom: 3px solid #3c3c3c;
+        }
+        @media(min-width: 600px) {
+            .grid-card { grid-template-columns: 180px 1fr; }
+        }
+
+        .grid-left { display: flex; flex-direction: column; gap: 15px; }
+        .grid-right { display: flex; flex-direction: column; gap: 10px; }
+
+        /* Flex Utilities */
+        .flex-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+
+        /* Form Overrides (Doodle forces forms to be columns, we need some inline) */
+        form.inline-form { display: flex; flex-direction: row; gap: 10px; align-items: center; margin: 0; }
+        form.action-form { display: inline-block; margin: 0; }
+        form.action-form button { width: auto; padding: 0.5em 1em; }
+
+        /* Specifics */
+        .book-preview-img { width: 100%; height: auto; display: block; }
+        .star-icon { width: 24px; height: 24px; border: none; }
+        .hidden { display: none !important; }
+        h1, h2, h3 { margin: 0 0 10px 0; }
+    </style>
+</head>
+<body class="doodle">
+    <main>

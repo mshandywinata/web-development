@@ -1,5 +1,5 @@
 import {
-  findAllNotes,
+  findBookWithNotes,
   modifyNote,
   removeNote,
   saveNote,
@@ -7,44 +7,70 @@ import {
 
 export const getAllNotes = async (req, res) => {
   try {
-    const notes = await findAllNotes();
+    const bookId = parseInt(req.params.bookId);
+    const bookWithNotes = await findBookWithNotes(bookId);
 
-    res.json(notes);
+    res.render("notes", { data: bookWithNotes });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch all notes." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to fetch all notes.",
+    });
   }
 };
 
 export const createNote = async (req, res) => {
   try {
+    const bookId = parseInt(req.params.bookId);
     const { content } = req.body;
-    const createdNote = await saveNote(content);
 
-    res.json(createdNote);
+    await saveNote(bookId, content);
+
+    res.redirect(`/books/${bookId}`);
   } catch (error) {
-    res.status(500).json({ message: "Failed to save new note." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to save new note.",
+    });
   }
 };
 
 export const updateNote = async (req, res) => {
   try {
+    const id = parseInt(req.params.id);
+    const bookId = parseInt(req.params.bookId);
     const { content } = req.body;
-    const { id } = req.params;
-    const updatedNote = await modifyNote(id, content);
+    await modifyNote(id, bookId, content);
 
-    res.json(updatedNote);
+    res.redirect(`/books/${bookId}`);
   } catch (error) {
-    res.status(500).json({ message: "Failed to modify note." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to modify note.",
+    });
   }
 };
 
 export const deleteNote = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deletedNote = await removeNote(id);
+    const id = parseInt(req.params.id);
+    const bookId = parseInt(req.params.bookId);
 
-    res.json(deletedNote);
+    removeNote(id, bookId);
+
+    res.redirect(`/books/${bookId}`);
   } catch (error) {
-    res.status(500).json({ message: "Failed to remove note." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to remove note.",
+    });
   }
 };

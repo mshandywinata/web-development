@@ -8,57 +8,96 @@ import {
 
 export const getAllBooks = async (req, res) => {
   try {
-    const sortBy = req.query.sortBy || "created_at";
-    const order = req.query.order || "desc";
-    const books = await findAllBooks(sortBy, order);
+    const sortOption = req.query.sortBy || "created_at";
+    const orderOption = req.query.orderBy || "desc";
+    const books = await findAllBooks(sortOption, orderOption);
 
-    res.json(books);
+    res.render("index", {
+      sortOption,
+      orderOption,
+      data: books,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch books." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to fetch books.",
+    });
   }
 };
 
 export const getBookById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const book = await findBookById(parseInt(id));
+    const id = parseInt(req.params.id);
+    const book = await findBookById(id);
 
-    res.json(book);
+    res.render("notes", {
+      title: book.title,
+      data: book,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch book by id." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to fetch book by id.",
+    });
   }
+};
+
+export const renderBookForm = (req, res) => {
+  res.render("add");
 };
 
 export const createBook = async (req, res) => {
   try {
-    const book = req.body;
-    const createdBook = await saveBook(book);
+    const book = {
+      ...req.body,
+      rating: parseInt(req.body.rating),
+    };
+    await saveBook(book);
 
-    res.json(createdBook);
+    res.redirect("/");
   } catch (error) {
-    res.status(500).json({ message: "Failed to save new book." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to save new book.",
+    });
   }
 };
 
 export const updateBook = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const book = req.body;
-    const updatedBook = await modifyBook(id, book);
+    await modifyBook(id, book);
 
-    res.json(updatedBook);
+    res.redirect("/");
   } catch (error) {
-    res.status(500).json({ message: "Failed to modify book." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to modify book.",
+    });
   }
 };
 
-export const deleteBook = async (id) => {
+export const deleteBook = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deletedBook = await removeBook(id);
+    const id = parseInt(req.params.id);
+    await removeBook(id);
 
-    res.json(deletedBook);
+    res.redirect("/");
   } catch (error) {
-    res.status(500).json({ message: "Failed to remove book." });
+    console.error(error);
+
+    render("error", {
+      status: 500,
+      message: "Failed to remove book.",
+    });
   }
 };

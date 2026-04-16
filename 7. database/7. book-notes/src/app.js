@@ -1,8 +1,10 @@
+import "dotenv/config";
 import path from "path";
 import { fileURLToPath } from "url";
 import express from "express";
 import morgan from "morgan";
 import bookRoutes from "./routes/bookRoutes.js";
+import methodOverride from "method-override";
 
 const app = express();
 
@@ -12,10 +14,15 @@ const __dirname = path.dirname(__filename);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+app.use(methodOverride("_method"));
 app.use(morgan("common"));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static(path.join(process.cwd(), "public")));
 
-app.use("/", bookRoutes);
+app.get("/", (req, res) => {
+  res.redirect("/books");
+});
+
+app.use("/books", bookRoutes);
 
 export default app;

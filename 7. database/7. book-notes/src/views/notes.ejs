@@ -1,0 +1,63 @@
+<%- include('partials/header.ejs') %>
+
+<div class="flex-between">
+    <div>
+        <h1>Notepad: <%= data.title %></h1>
+        <p><em>by <%= data.author %></em></p>
+    </div>
+    <button type="button" onclick="window.location.href='/'">Return</button>
+</div>
+
+<div class="grid-card" style="border-bottom: none;">
+    <div class="grid-left">
+        <% if (data.image_url !== null) { %>
+            <img src="<%= data.image_url %>" class="book-preview-img" alt="book cover image">
+        <% } else { %> 
+            <div class="doodle-border" style="padding: 20px; text-align: center;">No Cover</div>
+        <% } %>
+        <div><strong>Date:</strong> <%=data.created_at.toLocaleDateString('en-GB', { timeZone: 'UTC' });%></div>
+    </div>
+
+    <div class="grid-right">
+        <form action="/books/<%= data.id %>/notes" method="post">
+            <textarea name="content" autocomplete="off" placeholder="Write a new note here..."></textarea>
+            <button type="submit">Add Note</button>
+        </form>
+
+        <hr>
+
+        <% if (data.notes !== null && data.notes.length > 0) { %> 
+            <ul>
+                <% for (let i=0; i<data.notes.length; i++) { %> 
+                <li>
+                    <span id="note<%= data.notes[i].id %>"><%- data.notes[i].content %></span>
+                    
+                    <form action="/books/<%= data.id %>/notes/<%= data.notes[i].id %>?_method=PATCH" method="post" id="editForm<%= data.notes[i].id %>" class="hidden" style="width: 100%;">
+                        <input type="hidden" name="bookId" value="<%= data.id %>">
+                        <textarea name="content" autocomplete="off" autofocus="true"><%- data.notes[i].content %></textarea>
+                        <button type="submit" style="margin-top: 5px;">Done</button>
+                    </form>
+
+                    <div class="actions" id="actions<%= data.notes[i].id %>">
+                        <button type="button" onclick="handler('<%= data.notes[i].id %>')">Edit</button>
+                        <form action="/books/<%= data.id %>/notes/<%= data.notes[i].id %>?_method=DELETE" method="post" class="action-form">
+                            <input type="hidden" name="bookId" value="<%= data.id %>">
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this note?')">Delete</button>
+                        </form>
+                    </div>
+                </li>
+                <% } %>
+            </ul>
+        <% } else { %> 
+            <p>There are no notes yet.</p>
+        <% } %>
+    </div>
+</div>
+
+<script>
+function handler(id) {
+    document.getElementById("note" + id).classList.add("hidden");
+    document.getElementById("actions" + id).classList.add("hidden");
+    document.getElementById("editForm" + id).classList.remove("hidden");
+}
+</script>

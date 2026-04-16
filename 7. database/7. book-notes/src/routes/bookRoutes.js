@@ -1,16 +1,23 @@
 import express from "express";
+import noteRoutes from "./noteRoutes.js";
 import {
-  createBookEntry,
-  deleteBookEntryById,
-  getAllBookEntries,
-  updateBookEntryById,
+  createBook,
+  deleteBook,
+  getAllBooks,
+  getBookById,
+  updateBook,
+  renderBookForm,
 } from "../controllers/bookController.js";
 
 const router = express.Router();
 
-router.get("/book", getAllBookEntries);
-router.post("/new", createBookEntry);
-router.patch("/book/:id", updateBookEntryById);
-router.delete("/book/:id", deleteBookEntryById);
+router.use("/:bookId/notes", noteRoutes);
+
+router.get("/add", renderBookForm);
+router.post("/", createBook);
+router.get("/", getAllBooks);
+router.get("/:id", getBookById);
+router.patch("/:id", updateBook);
+router.delete("/:id", deleteBook);
 
 export default router;
