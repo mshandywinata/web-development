@@ -23,6 +23,7 @@ app.use(express.static(path.join(process.cwd(), "public")));
 
 app.use(
   session({
+    name: "cookie-demo",
     secret: config.sessionSecret,
     resave: false,
     saveUninitialized: true,
